@@ -64,7 +64,7 @@ export class AuthService {
 
     async refreshToken(userId: number, rt: string) {
         const user = await this.userService.getById(userId)
-        if(!user){
+        if(!user || !user.hashedRt){
             throw new ForbiddenException('Access denied')
         }
 
@@ -102,7 +102,7 @@ export class AuthService {
                 },
                 {
                     secret: 'at-secret',
-                    expiresIn: 60 * 15
+                    expiresIn: 60 * 60
                 }
                 ),
                 this.jwtService.signAsync(

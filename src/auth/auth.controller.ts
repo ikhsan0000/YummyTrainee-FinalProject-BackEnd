@@ -5,37 +5,44 @@ import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { Tokens } from './types';
 import { Request } from "express";
+import { AtGuard, RtGuard } from 'src/common/guards';
+import { GetCurrentUser, Public } from 'src/common/decorator';
 
 
 @Controller('auth')
 export class AuthController {
 
     constructor(private authService: AuthService){}
-
+    
+    @Public()
     @Post('/local/signup')
     @HttpCode(HttpStatus.CREATED)
     signupLocal(@Body() signUpDto: SignUpDto): Promise<Tokens>{
         return this.authService.signupLocal(signUpDto)
     }
 
+    @Public()
     @Post('/local/login')
     @HttpCode(HttpStatus.OK)
-    loginLocal(@Body() loginDto: LoginDto): Promise<Tokens>{
+    async loginLocal(@Body() loginDto: LoginDto): Promise<Tokens>{
         return this.authService.loginLocal(loginDto)
     }
-
-    @UseGuards(AuthGuard('jwt'))
+    
+    @UseGuards(AtGuard)
     @Post('/logout')
     @HttpCode(HttpStatus.OK)
-    logout(@Req() req: Request){
-        return this.authService.logout(req.user['sub'])
+    logout(@GetCurrentUser('sub') userId:number){
+        return this.authService.logout(userId)
     }
-
-    @UseGuards(AuthGuard('jwt-refresh'))
+    
+    @Public()
+    @UseGuards(RtGuard)
     @Post('/refresh')
     @HttpCode(HttpStatus.OK)
-    refreshToken(@Req() req: Request){
-        const user = req.user
-        this.authService.refreshToken(user['sub'], user['refreshToken'])
+    refreshToken(
+        @GetCurrentUser('refreshToken') refreshToken:string,
+        @GetCurrentUser('sub') userId:number
+    ){
+        return this.authService.refreshToken(userId, refreshToken)
     }
 }

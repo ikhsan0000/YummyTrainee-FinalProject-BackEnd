@@ -5,6 +5,9 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AtGuard } from './common/guards';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -20,9 +23,16 @@ import { UserModule } from './user/user.module';
       synchronize: true,
     }),
     AuthModule,
-    UserModule
+    UserModule,
+    ProductsModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AtGuard
+    },
+    AppService
+  ],
 })
 export class AppModule {}
