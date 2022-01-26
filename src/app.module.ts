@@ -21,6 +21,7 @@ import { ProductsModule } from './products/products.module';
       database: 'react_native_fashion',
       autoLoadEntities: true,
       synchronize: true,
+      logging: true
     }),
     AuthModule,
     UserModule,

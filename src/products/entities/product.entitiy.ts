@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, OneToMany, JoinTable } from "typeorm";
 import { Brand } from "./brand.entity";
 import { ProductImage } from "./product-image";
-import { Size } from "./prouct-size";
+import { Size } from "./prouct-size.entity";
 
 
 @Entity('products')
@@ -21,11 +21,18 @@ export class Product {
 
     @OneToMany(() => ProductImage, (prodImage) => prodImage.product )
     productImage: ProductImage[];
-
-    @ManyToMany(() => Size)
+    
     @JoinTable()
+    @ManyToMany(
+        type => Size,
+        (size) => size.name,
+        {cascade: true}
+        )
     sizes: Size[]
 
-    @ManyToOne(() => Brand, (brand) => brand.productList)
+    @ManyToOne(
+        () => Brand,
+        (brand) => brand.productList,
+    )
     brand: Brand;
 }

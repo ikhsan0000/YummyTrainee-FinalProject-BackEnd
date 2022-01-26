@@ -3,7 +3,7 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Public } from 'src/common/decorator';
 import { editFileName, imageFileFilter } from 'src/common/imageUtils/imageUtils';
-import { ProductDto } from './dto/product.dto';
+import { CreateProductDto } from './dto/create-product.dto';
 import { ProductsService } from './products.service';
 
 @Controller('products')
@@ -40,13 +40,10 @@ export class ProductsController {
         fileFilter: imageFileFilter
     }))
     createProduct(
-        @Body() productDto: ProductDto,
+        @Body() createProductDto: CreateProductDto,
         @UploadedFiles() files: Array<Express.Multer.File>
     ): any{
-        return {
-            productDto,
-            files
-        }
+        return this.productsService.create(createProductDto, files)
     }
 
 }
