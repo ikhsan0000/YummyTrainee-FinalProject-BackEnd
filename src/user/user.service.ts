@@ -10,15 +10,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(User) private readonly userService: Repository<User>
+        @InjectRepository(User) private readonly userRepository: Repository<User>
     ){}
 
     async getById(userId: number){
-        return await this.userService.findOne(userId)
+        return await this.userRepository.findOne(userId)
     }
 
     async getOnebyField(field: string, searchedValue:string){
-        return await this.userService.findOne({
+        return await this.userRepository.findOne({
             where:[
                 {[field]: searchedValue}
             ]
@@ -36,14 +36,14 @@ export class UserService {
         user.password = passwordHashed
         user.email = createUserDto.email
 
-        this.userService.create(user)
-        await this.userService.save(user)
+        this.userRepository.create(user)
+        await this.userRepository.save(user)
 
         return user;
     }
     
     async update(updateUserDto: UpdateUserDto) {
-        await this.userService.save({
+        await this.userRepository.save({
             ...updateUserDto
         })
     }

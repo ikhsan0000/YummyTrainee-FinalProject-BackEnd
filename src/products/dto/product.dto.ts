@@ -1,5 +1,7 @@
-import { IsEnum, IsNotEmpty } from "class-validator";
-import { SizesEnum } from "../entities/product.entitiy";
+import { IsNotEmpty } from "class-validator";
+import { Brand } from "../entities/brand.entity";
+import { ProductImage } from "../entities/product-image";
+import { Size } from "../entities/prouct-size";
 
 export class ProductDto
 {
@@ -12,12 +14,11 @@ export class ProductDto
     @IsNotEmpty()
     price:number;
 
-    imageUrl:string;
+    images:ProductImage[];
 
-    brand: string;
+    brand: Brand;
 
-    @IsEnum(SizesEnum)
-    sizes: SizesEnum[]
+    sizes: Size[]
 
 
 }

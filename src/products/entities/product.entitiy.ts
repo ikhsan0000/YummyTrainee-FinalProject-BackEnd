@@ -1,16 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, OneToMany, JoinTable } from "typeorm";
 import { Brand } from "./brand.entity";
+import { ProductImage } from "./product-image";
+import { Size } from "./prouct-size";
 
-export enum SizesEnum
-{
-  S = 1,
-  M,
-  L, 
-  XL
-}
 
 @Entity('products')
-export class Products {
+export class Product {
 
     @PrimaryGeneratedColumn()
     id:number;
@@ -24,14 +19,12 @@ export class Products {
     @Column()
     price:number;
 
-    @Column()
-    imageUrl:string;
+    @OneToMany(() => ProductImage, (prodImage) => prodImage.product )
+    productImage: ProductImage[];
 
-    @Column('enum', {
-        enum: SizesEnum,
-        default: SizesEnum.S
-    })
-    sizes: SizesEnum[]
+    @ManyToMany(() => Size)
+    @JoinTable()
+    sizes: Size[]
 
     @ManyToOne(() => Brand, (brand) => brand.productList)
     brand: Brand;

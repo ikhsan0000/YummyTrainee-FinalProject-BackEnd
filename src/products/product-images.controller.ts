@@ -1,15 +1,12 @@
-import { Body, Controller, Get, Param, Post, Res, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Public } from 'src/common/decorator';
 import { editFileName, imageFileFilter } from 'src/common/imageUtils/imageUtils';
 import { ProductDto } from './dto/product.dto';
-import { ProductsService } from './products.service';
 
-@Controller('products')
+@Controller('product')
 export class ProductsController {
-
-    constructor(private productsService: ProductsService){}
 
     @Public()
     @Get()
@@ -22,17 +19,10 @@ export class ProductsController {
     getProductById(@Param('id') id: string){
         
     }
-
-    @Public()
-    @Get('images/:imageUrl')
-    getProductImage(@Param('imageUrl') image:string, @Res() res:any){
-        return res.sendFile(image, { root: './images/products' });
-    }
-
     
     @Public()
     @Post()
-    @UseInterceptors(FilesInterceptor('files',5, {
+    @UseInterceptors(FileInterceptor('file', {
         storage: diskStorage({
             destination: './images/products',
             filename: editFileName,
@@ -41,12 +31,11 @@ export class ProductsController {
     }))
     createProduct(
         @Body() productDto: ProductDto,
-        @UploadedFiles() files: Array<Express.Multer.File>
+        @UploadedFile() file: Express.Multer.File
     ): any{
         return {
             productDto,
-            files
+            file
         }
     }
-
 }
