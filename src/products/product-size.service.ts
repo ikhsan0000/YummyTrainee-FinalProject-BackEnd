@@ -10,12 +10,13 @@ export class ProductSizeService {
         @InjectRepository(Size) private readonly productSizeRepository: Repository<Size>,
     ) { }
 
-    async getAll() {
-        return this.productSizeRepository.find();
-    }
-
-    async getByName(name: string) {
+    async getAll(filter?: any) {
+        const name = filter.name
+        if(!name){
+            return this.productSizeRepository.find();
+        }
         return this.productSizeRepository.findOne({ name });
+
     }
 
 }

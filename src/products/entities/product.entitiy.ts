@@ -1,5 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, OneToMany, JoinTable } from "typeorm";
 import { Brand } from "./brand.entity";
+import { Category } from "./category.entity";
 import { ProductImage } from "./product-image";
 import { Size } from "./prouct-size.entity";
 
@@ -8,31 +9,44 @@ import { Size } from "./prouct-size.entity";
 export class Product {
 
     @PrimaryGeneratedColumn()
-    id:number;
+    id: number;
 
     @Column()
-    name:string;
+    name: string;
 
     @Column()
-    description:string;
+    description: string;
 
     @Column()
-    price:number;
+    price: number;
 
-    @OneToMany(() => ProductImage, (prodImage) => prodImage.product )
+    @OneToMany(
+        () => ProductImage,
+        (prodImage) => prodImage.product,
+        { cascade: true }
+    )
     productImage: ProductImage[];
-    
+
     @JoinTable()
     @ManyToMany(
         type => Size,
         (size) => size.name,
-        {cascade: true}
-        )
+        { cascade: true }
+    )
     sizes: Size[]
+
+    @JoinTable()
+    @ManyToOne(
+        type => Category,
+        (category) => category.name,
+        { onDelete: 'CASCADE' }
+    )
+    category: Category
 
     @ManyToOne(
         () => Brand,
         (brand) => brand.productList,
+        { onDelete: 'CASCADE' }
     )
     brand: Brand;
 }

@@ -21,13 +21,9 @@ export class AuthService {
             throw new BadRequestException('Password does not match')
         }
 
-        const isUsernameExist = await this.userService.getOnebyField('username', signUpDto.username)
         const isEmailExist = await this.userService.getOnebyField('email', signUpDto.email)
 
-        if(isUsernameExist) {
-            throw new BadRequestException('username already exists')
-        }
-        else if(isEmailExist) {
+        if(isEmailExist) {
             throw new BadRequestException('email already used')
         }
 
@@ -35,7 +31,7 @@ export class AuthService {
         const {passwordConfirm, ...rest} = signUpDto 
 
         const newUser = await this.userService.create(rest)
-        const tokens = await this.getTokens(newUser.id, newUser.username)
+        const tokens = await this.getTokens(newUser.id, newUser.email)
         await this.updateRtHash(newUser.id, tokens.refreshToken)
 
         return tokens;
@@ -52,7 +48,7 @@ export class AuthService {
             throw new ForbiddenException('Access denied')
         }
 
-        const tokens = await this.getTokens(user.id, user.username)
+        const tokens = await this.getTokens(user.id, user.email)
         await this.updateRtHash(user.id, tokens.refreshToken)
 
         return tokens;
@@ -73,7 +69,7 @@ export class AuthService {
             throw new ForbiddenException('Access denied')
         }
         
-        const tokens = await this.getTokens(user.id, user.username)
+        const tokens = await this.getTokens(user.id, user.email)
         await this.updateRtHash(user.id, tokens.refreshToken)
 
         return tokens;

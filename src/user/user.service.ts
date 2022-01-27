@@ -31,7 +31,7 @@ export class UserService {
         const {password} = createUserDto
         const passwordHashed = await bcrypt.hash(password, 10);
         
-        user.username = createUserDto.username
+        // user.username = createUserDto.username
         user.fullName = createUserDto.fullName
         user.password = passwordHashed
         user.email = createUserDto.email

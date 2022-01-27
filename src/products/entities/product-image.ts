@@ -10,6 +10,11 @@ export class ProductImage {
     @Column()
     fileName:string;
 
-    @ManyToOne(() => Product, (product) => product.productImage)
+    @ManyToOne(
+        () => Product,
+        (product) => product.productImage,
+        { onDelete: 'CASCADE' }
+    )
+        
     product: Product;
 }

@@ -11,13 +11,8 @@ export class ProductSizeController {
 
     @Public()
     @Get()
-    getAll(){
-        return this.productSizeService.getAll()
-    }
-    @Public()
-    @Get('/find')
-    getOneByName(@Query() param: string){
-        return this.productSizeService.getByName(param['name'])
+    getAll(@Query() filter: string){
+        return this.productSizeService.getAll(filter)
     }
 
 

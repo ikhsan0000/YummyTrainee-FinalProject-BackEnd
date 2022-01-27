@@ -1,24 +1,25 @@
 import { IsNotEmpty } from "class-validator";
 import { Brand } from "../entities/brand.entity";
+import { Category } from "../entities/category.entity";
 import { ProductImage } from "../entities/product-image";
 import { Size } from "../entities/prouct-size.entity";
 
-export class CreateProductDto
-{
+export class CreateProductDto {
     @IsNotEmpty()
-    name:string;
+    name: string;
 
     @IsNotEmpty()
-    description:string;
+    description: string;
 
     @IsNotEmpty()
-    price:number;
+    price: number;
 
-    images:ProductImage[];
+    category: Category;
 
     brand: Brand;
 
     sizes: Size[]
 
+    images: ProductImage[];
 
 }
