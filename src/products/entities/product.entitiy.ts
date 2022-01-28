@@ -30,14 +30,14 @@ export class Product {
     @JoinTable()
     @ManyToMany(
         type => Size,
-        (size) => size.name,
+        (size:Size) => size.name,
         { cascade: true }
     )
     sizes: Size[]
 
     @JoinTable()
     @ManyToOne(
-        type => Category,
+        () => Category,
         (category) => category.name,
         { onDelete: 'CASCADE' }
     )
@@ -49,4 +49,5 @@ export class Product {
         { onDelete: 'CASCADE' }
     )
     brand: Brand;
+
 }

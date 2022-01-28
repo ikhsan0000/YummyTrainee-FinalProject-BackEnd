@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { Brand } from './entities/brand.entity';
 import { Category } from './entities/category.entity';
 import { ProductImage } from './entities/product-image';
@@ -15,7 +16,8 @@ export class ProductsService {
         @InjectRepository(Product) private readonly productRepository: Repository<Product>,
         @InjectRepository(Size) private readonly productSizeRepository: Repository<Size>,
         @InjectRepository(Brand) private readonly brandRepository: Repository<Brand>,
-        @InjectRepository(Category) private readonly categoryRepository: Repository<Category>
+        @InjectRepository(Category) private readonly categoryRepository: Repository<Category>,
+        @InjectRepository(ProductImage) private readonly imageRepository: Repository<ProductImage>
     ) { }
 
 
@@ -75,10 +77,59 @@ export class ProductsService {
 
         await this.productRepository.save(product)
 
-
         return product
+    }
 
+    async update(id:number, updateProductDto: UpdateProductDto, images?: any){
 
+        const isProductExist = await this.getById(id)
+        if(!isProductExist){
+            throw new NotFoundException('No Product with that id')
+        }
+
+        if(images.length !== 0)      // if images is updated, concat the existing images with the new images
+        {
+            const existingImages = (await this.getById(id)).productImage
+            const oldImages = existingImages.map((image: any) => {
+                return {
+                    fileName: image.fileName
+                }
+            })
+
+            const newImages = images.map((image: any) => {
+                return {
+                    fileName: image.filename,
+                };
+            });
+
+            const updatedImages = oldImages.concat(newImages)
+
+            await this.productRepository.save({id: id, productImage: updatedImages, ...updateProductDto})
+
+            //Remove old relation 
+            const oldImageRecord = await this.imageRepository.find({
+                relations: ['product'],
+                where: {product: null}
+            })
+            await this.imageRepository.remove(oldImageRecord)
+
+            return await this.getById(id)
+        }
+        
+        //if image not updated, then update the rest
+        await this.productRepository.save({id: id, ...updateProductDto} )
+        return await this.getById(id)
+    }
+
+    async delete(id:number){
+        const isProductExist = await this.getById(id)
+        
+        if(!isProductExist){
+            throw new NotFoundException('No Product with that id')
+        }
+
+        return await this.productRepository.remove(isProductExist)
+        
     }
 
 
