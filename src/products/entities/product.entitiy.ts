@@ -1,3 +1,4 @@
+import { CartToProduct } from "src/cart/entities/cartToProduct.entity";
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, OneToMany, JoinTable } from "typeorm";
 import { Brand } from "./brand.entity";
 import { Category } from "./category.entity";
@@ -49,5 +50,12 @@ export class Product {
         { onDelete: 'CASCADE' }
     )
     brand: Brand;
+
+    @OneToMany(
+        () => CartToProduct, 
+        cartToProduct => cartToProduct.product,
+        { cascade: true }
+    )
+    cartToProduct: CartToProduct[]
 
 }

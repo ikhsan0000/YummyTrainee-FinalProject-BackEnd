@@ -1,6 +1,7 @@
 import { Product } from "src/products/entities/product.entitiy";
 import { User } from "src/user/entities/user.entity";
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, OneToMany, JoinTable, OneToOne } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany, OneToMany, JoinTable, OneToOne, JoinColumn } from "typeorm";
+import { CartToProduct } from "./cartToProduct.entity";
 
 
 @Entity('carts')
@@ -12,8 +13,9 @@ export class Cart {
     @OneToOne(
         () => User,
         (user:User) => user.cart,
-        { cascade: true }
+        { onDelete: 'CASCADE' }
     )
+    @JoinColumn()
     user: User;
 
     @JoinTable()
@@ -23,5 +25,12 @@ export class Cart {
         { cascade: true }
     )
     products: Product[]
+
+    @OneToMany(
+        () => CartToProduct, 
+        cartToProduct => cartToProduct.cart,
+        { cascade: true }
+    )
+    cartToProduct: CartToProduct[]
 
 }

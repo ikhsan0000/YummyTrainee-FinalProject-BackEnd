@@ -21,8 +21,8 @@ export class User {
 
     @OneToOne(
         () => Cart,
-        (cart:Cart) => cart.user
+        (cart:Cart) => cart.user,
+        { cascade: true }
     )
-    @JoinColumn()
     cart: Cart;
 }

@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty } from "class-validator";
+import { Cart } from "src/cart/entities/cart.entity";
 
 export class CreateUserDto {
 
@@ -11,4 +12,6 @@ export class CreateUserDto {
  
     @IsNotEmpty()
     password: string;
+
+    // cart: Cart;
 }

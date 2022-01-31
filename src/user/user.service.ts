@@ -5,12 +5,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Cart } from 'src/cart/entities/cart.entity';
 
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(User) private readonly userRepository: Repository<User>
+        @InjectRepository(User) private readonly userRepository: Repository<User>,
     ){}
 
     async getById(userId: number){
@@ -31,10 +32,13 @@ export class UserService {
         const {password} = createUserDto
         const passwordHashed = await bcrypt.hash(password, 10);
         
-        // user.username = createUserDto.username
+        const cart = new Cart();
+
         user.fullName = createUserDto.fullName
         user.password = passwordHashed
         user.email = createUserDto.email
+        user.cart = cart
+        console.log(user)
 
         this.userRepository.create(user)
         await this.userRepository.save(user)

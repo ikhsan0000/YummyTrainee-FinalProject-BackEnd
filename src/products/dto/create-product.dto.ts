@@ -14,11 +14,11 @@ export class CreateProductDto {
     @IsNotEmpty()
     price: number;
 
-    category: Category;
+    category: string;
 
-    brand: Brand;
+    brand: string;
 
-    sizes: Size[]
+    sizes: string[]
 
     images: ProductImage[];
 

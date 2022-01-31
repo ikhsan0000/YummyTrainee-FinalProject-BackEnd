@@ -1,0 +1,10 @@
+import { IsEmail, IsNotEmpty } from "class-validator";
+
+export class AddToCartDto
+{
+    @IsNotEmpty()
+    productId:number
+
+    quantity: number
+    
+}
