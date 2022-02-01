@@ -10,6 +10,12 @@ export class CartToProduct {
     @Column({default: 1})
     quantity: number;
 
+    @Column()
+    size: string
+
+    @Column()
+    image: string
+
     @ManyToOne(
         () => Cart,
         cart => cart.cartToProduct,

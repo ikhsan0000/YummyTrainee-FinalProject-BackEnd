@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post } from '@nestjs/common';
 import { GetCurrentUser } from 'src/common/decorator';
 import { CartService } from './cart.service';
+import { EditQuantityDto } from './dto/editQuantity.dto';
 
 @Controller('cart')
 export class CartController {
@@ -18,6 +19,13 @@ export class CartController {
         @Body() productId: any
     ){
         return this.cartService.addToCart(userId, productId)
+    }
+
+    @Patch()
+    editCart(
+        @Body() editQuantityDto: EditQuantityDto
+    ){
+        return this.cartService.updateQuantity(editQuantityDto)
     }
 
     @Delete()
