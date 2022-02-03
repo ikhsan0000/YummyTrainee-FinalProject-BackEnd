@@ -1,13 +1,16 @@
 import { Product } from "src/products/entities/product.entitiy";
 import { Entity, Column, ManyToOne, PrimaryGeneratedColumn, JoinColumn } from "typeorm";
-import { Cart } from "./cart.entity";
+import { Transaction } from "./transaction.entity";
 
 @Entity()
-export class CartToProduct {
+export class TransactionItem {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({default: 1})
+    @Column()
+    name: string;
+
+    @Column()
     quantity: number;
 
     @Column()
@@ -17,14 +20,10 @@ export class CartToProduct {
     image: string
 
     @ManyToOne(
-        () => Cart,
-        cart => cart.cartToProduct,
+        () => Transaction,
+        (transaction) => transaction.transactionItems,
         { onDelete: "CASCADE" }
     )
-    @JoinColumn()
-    cart: Cart;
+    transaction: Transaction
     
-    @ManyToOne(() => Product, product => product.cartToProduct)
-    @JoinColumn()
-    product: Product;
 }

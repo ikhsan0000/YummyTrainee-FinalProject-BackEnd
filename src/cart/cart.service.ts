@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/products/entities/product.entitiy';
+import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import { AddToCartDto } from './dto/addToCart.dto';
@@ -15,6 +16,7 @@ export class CartService {
         @InjectRepository(Cart) private readonly cartRepository: Repository<Cart>,
         @InjectRepository(Product) private readonly productRepository: Repository<Product>,
         @InjectRepository(CartToProduct) private readonly cartToProductRepository: Repository<CartToProduct>,
+        @InjectRepository(User) private readonly userRepository: Repository<User>,
         private readonly userService: UserService,
     ){}
 
@@ -38,6 +40,27 @@ export class CartService {
         }
     }
 
+    async getCartToProduct(userId: number){
+        const currentCart =  await this.cartRepository.findOne({ 
+            relations: ['user', 'cartToProduct'],
+            where: { user: { id: userId } }
+        })
+
+        const currentCartToProduct = await this.cartToProductRepository.find({
+            relations:['cart', 'product'],
+            where: { cart: { id: currentCart.id } }
+        })
+
+        return currentCartToProduct
+    }
+
+    async getCartToProductById(cartToProductId: number){
+
+        const currentCartToProduct = await this.cartToProductRepository.findOne(cartToProductId)
+
+        return currentCartToProduct
+    }
+
     async addToCart(userId:number, data: AddToCartDto){
 
         // const items = await ids.forEach(async id => {
@@ -56,6 +79,10 @@ export class CartService {
         // return existingItems
         
         const items = await this.productRepository.find({id: data.productId})
+
+        if(items.length === 0){
+            throw new NotFoundException('product not found!')
+        }
         
         const newItems = existingItems.products.concat(items)
 
@@ -111,16 +138,18 @@ export class CartService {
         return await this.cartRepository.save(currentCart)
     }
 
-    async deleteAllFromCart(userId:number, productId: AddToCartDto){
+    async deleteAllFromCart(userId:number){
         const currentCart =  await this.cartRepository.findOne({ 
             relations: ['products', 'user'],
             where: { user: { id: userId } }
         })
+        const currentUser = await this.userService.getById(userId)
 
         const emptyCart = new Cart()
-        
+        emptyCart.user = currentUser
 
-        await this.cartRepository.delete(currentCart)
-        return await this.userService.update({...emptyCart})
+        await this.cartRepository.delete(currentCart.id)
+        return await this.cartRepository.save(emptyCart)
     }
+
 }
