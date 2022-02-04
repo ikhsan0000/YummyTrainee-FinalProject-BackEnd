@@ -63,15 +63,11 @@ export class CartService {
 
     async addToCart(userId:number, data: AddToCartDto){
 
-        // const items = await ids.forEach(async id => {
-        //     return await this.productRepository.findOne(id)
-        // })
-
         // !!!  this behave normally !!!
-        const existingItems = await this.getByUserId(userId)
+        // const cart = await this.getByUserId(userId)
         
         // !!! this doesn't save to CartToProduct Table, need future investigation !!! 
-        // const existingItems =  await this.cartRepository.findOne({ 
+        // const cart =  await this.cartRepository.findOne({ 
         //     relations: ['products', 'user', 'cartToProduct'],
         //     where: { user: { id: userId } }
         // })
@@ -84,14 +80,34 @@ export class CartService {
             throw new NotFoundException('product not found!')
         }
         
-        const newItems = existingItems.products.concat(items)
-
         const cart = await this.getByUserId(userId)
-        cart.products = newItems
-        
-        const existingCartToProduct = await this.cartRepository.findOne(existingItems.id, {
+
+        const existingCartToProduct = await this.cartRepository.findOne(cart.id, {
             relations:['cartToProduct']
         })
+        
+        const cartToProducts =  await this.cartToProductRepository.find({
+            relations:['product'],
+            where: {cart: {id: cart.id}}
+        })
+        
+        //check if the item is already in user's cart     
+        let cartToProductItemAlreadyExist = null
+        cartToProducts.forEach(element => {
+            if(element.product.id == data.productId){
+                cartToProductItemAlreadyExist = element
+
+            }
+        });
+
+        if(cartToProductItemAlreadyExist !== null){
+            await this.cartToProductRepository.update(cartToProductItemAlreadyExist.id, {quantity: cartToProductItemAlreadyExist.quantity + data.quantity })
+            return cartToProductItemAlreadyExist
+        }
+        
+        const newItems = cart.products.concat(items)
+        cart.products = newItems
+        
 
         let newCartToProduct = new Array
 
@@ -110,7 +126,6 @@ export class CartService {
         newCartToProduct.push(cartToProduct)
         
         return await this.cartRepository.save({cartToProduct: newCartToProduct, ...cart})
-
     }
 
     async updateQuantity(data: EditQuantityDto){
@@ -125,14 +140,27 @@ export class CartService {
         return await this.cartToProductRepository.save(currentCartToProduct)
     }
 
-    async deleteOne(userId: number, data: any){
+    async deleteOne(userId: number, cartToProductId: any){
+        const currentCartToProduct = await this.cartToProductRepository.findOne({
+            relations:['cart', 'product'],
+            where: { id: cartToProductId }
+        })
+
+        if(!currentCartToProduct){
+            throw new NotFoundException('No cart found')
+        }
+
+        const productId = currentCartToProduct.product.id
+
+        await this.cartToProductRepository.delete({id: cartToProductId})
+
         const currentCart =  await this.cartRepository.findOne({ 
             relations: ['products', 'user'],
             where: { user: { id: userId } }
         })
 
         currentCart.products = currentCart.products.filter(product => {
-            return product.id !== data.itemId
+            return product.id != productId
         })
 
         return await this.cartRepository.save(currentCart)

@@ -38,11 +38,11 @@ export class CartController {
         return this.cartService.updateQuantity(editQuantityDto)
     }
 
-    @Delete()
+    @Delete('/:id')
     deleteItemFromCart(
         @GetCurrentUser('sub') userId:number,
-        @Body() productId: any
+        @Param('id') cartToProductId: any
     ){
-        return this.cartService.deleteOne(userId, productId)
+        return this.cartService.deleteOne(userId, cartToProductId)
     }
 }
