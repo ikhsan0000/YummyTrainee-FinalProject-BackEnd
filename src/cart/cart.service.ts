@@ -94,7 +94,7 @@ export class CartService {
         //check if the item is already in user's cart     
         let cartToProductItemAlreadyExist = null
         cartToProducts.forEach(element => {
-            if(element.product.id == data.productId){
+            if(element.product.id == data.productId && element.size == data.size){
                 cartToProductItemAlreadyExist = element
 
             }

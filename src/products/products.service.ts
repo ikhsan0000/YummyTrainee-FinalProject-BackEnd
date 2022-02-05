@@ -28,23 +28,36 @@ export class ProductsService {
     }
 
     async getById(id: number): Promise<Product> {
-        return this.productRepository.findOne(id, {
+        const product = await this.productRepository.findOne(id, {
             relations: ['sizes', 'brand', 'productImage', 'category']
         })
+        if(!product){
+            throw new NotFoundException('product Not Found')
+        }
+        return product
     }
 
     async getByCategory(filter: string): Promise<Product[]> {
         const filterFormatted = filter.replace('-', ' ')
-        return this.productRepository.find({
+        const result =  this.productRepository.find({
             relations: ['sizes', 'brand', 'productImage', 'category'],
             where: {
                 'category': { name: [filterFormatted] }
             }
         });
+        
+        if(!result){
+            throw new NotFoundException('product Not Found')
+        }
+
+        return result
     }
 
     async getByKeyword(keyword: string) {
-        return this.productRepository.find({
+        if(keyword == ''){
+            return await this.getAll()
+        }
+        const result = await this.productRepository.find({
             relations: ['sizes', 'brand', 'productImage', 'category'],
             where: [
                 { name: Like(`%${keyword}%`) },
@@ -52,6 +65,12 @@ export class ProductsService {
                 { brand: {name: Like(`%${keyword}%`)}}
             ]
         })
+
+        if(!result){
+            throw new NotFoundException('product Not Found')
+        }
+
+        return result
     }
 
     async create(data: CreateProductDto, images: any): Promise<Product> {
@@ -129,7 +148,6 @@ export class ProductsService {
         }
 
         return await this.productRepository.remove(isProductExist)
-        
     }
 
 

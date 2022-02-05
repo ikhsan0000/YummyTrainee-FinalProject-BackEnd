@@ -1,4 +1,29 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { GetCurrentUser, Public } from 'src/common/decorator';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserService } from './user.service';
 
 @Controller('user')
-export class UserController {}
+export class UserController {
+
+    constructor(private userService: UserService){}
+
+    @Public()
+    @Get('/:id')
+    async getById(@Param('id') id: number){
+        return await this.userService.getById(id)
+    }
+
+    @Public()
+    @Patch()
+    async updateUser(@Body() updateUserDto: UpdateUserDto){
+        return await this.userService.update(updateUserDto)
+    }
+
+    @Delete()
+    async deleteUser(@GetCurrentUser('sub') userId:number){
+        await this.userService.delete(userId)
+        return 'Successfuly Deleted'
+    }
+
+}

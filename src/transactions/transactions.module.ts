@@ -4,6 +4,7 @@ import { CartService } from 'src/cart/cart.service';
 import { Cart } from 'src/cart/entities/cart.entity';
 import { CartToProduct } from 'src/cart/entities/cartToProduct.entity';
 import { Product } from 'src/products/entities/product.entitiy';
+import { UserProfile } from 'src/user/entities/user-profile.entity';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { TransactionItem } from './entity/transaction-item.entity';

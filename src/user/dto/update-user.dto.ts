@@ -1,13 +1,11 @@
-import { IsEmail } from "class-validator";
+import { IsEmail, IsNotEmpty } from "class-validator";
 
 export class UpdateUserDto
 {
-    id?:number;
-    username?:string;
+    @IsNotEmpty()
+    id:number;
+
     password?:string;
-    passwordConfirm?:string;
-    fullName?:string;
-    @IsEmail()
-    email?:string
+    oldPassword?:string
     hashedRt?:string
 }

@@ -40,12 +40,12 @@ export class AuthService {
     async loginLocal(loginDto: LoginDto): Promise<Tokens> {
         const user = await this.userService.getOnebyField('email', loginDto.email)
         if(!user){
-            throw new ForbiddenException('Access denied')
+            throw new ForbiddenException('Wrong credentials')
         }
 
         const isPasswordMatch = await bcrypt.compare(loginDto.password, user.password)
         if(!isPasswordMatch){
-            throw new ForbiddenException('Access denied')
+            throw new ForbiddenException('Wrong credentials')
         }
 
         const tokens = await this.getTokens(user.id, user.email)

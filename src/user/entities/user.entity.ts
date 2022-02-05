@@ -1,6 +1,7 @@
 import { Cart } from "src/cart/entities/cart.entity";
 import { Transaction } from "src/transactions/entity/transaction.entity";
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { UserProfile } from "./user-profile.entity";
 
 @Entity('users')
 export class User {
@@ -34,4 +35,11 @@ export class User {
 
     )
     transactions: Transaction[]
+
+    @OneToOne(
+        () => UserProfile,
+        (userProfile) => userProfile.user,
+        { cascade: true }
+    )
+    userProfile: UserProfile;
 }
