@@ -42,7 +42,6 @@ export class UserService {
         const profile = new UserProfile();
         profile.fullName = createUserDto.fullName
 
-        user.fullName = createUserDto.fullName
         user.password = passwordHashed
         user.email = createUserDto.email
         user.cart = cart
@@ -72,7 +71,7 @@ export class UserService {
             ...updateUserDto
         })
     }
-
+    
     async delete(userId: number){
         return await this.userRepository.delete({id: userId})
     }

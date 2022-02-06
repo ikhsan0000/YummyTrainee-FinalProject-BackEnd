@@ -10,9 +10,6 @@ export class User {
     id:number;
 
     @Column()
-    fullName:string;
-
-    @Column()
     password:string;
 
     @Column({ unique: true })
