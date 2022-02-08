@@ -12,6 +12,9 @@ export class TransactionItem {
 
     @Column()
     quantity: number;
+    
+    @Column()
+    price: number;
 
     @Column()
     size: string

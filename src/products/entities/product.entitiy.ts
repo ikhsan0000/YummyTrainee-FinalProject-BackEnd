@@ -24,7 +24,7 @@ export class Product {
     @OneToMany(
         () => ProductImage,
         (prodImage) => prodImage.product,
-        { cascade: true }
+        { cascade: true, eager: true}
     )
     productImage: ProductImage[];
 
@@ -32,7 +32,7 @@ export class Product {
     @ManyToMany(
         type => Size,
         (size:Size) => size.name,
-        { cascade: true }
+        { cascade: true, eager: true}
     )
     sizes: Size[]
 
@@ -40,14 +40,14 @@ export class Product {
     @ManyToOne(
         () => Category,
         (category) => category.name,
-        { onDelete: 'CASCADE' }
+        { onDelete: 'CASCADE', eager: true}
     )
     category: Category
 
     @ManyToOne(
         () => Brand,
         (brand) => brand.productList,
-        { onDelete: 'CASCADE' }
+        { onDelete: 'CASCADE', eager: true}
     )
     brand: Brand;
 

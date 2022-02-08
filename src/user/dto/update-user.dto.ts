@@ -2,8 +2,7 @@ import { IsEmail, IsNotEmpty } from "class-validator";
 
 export class UpdateUserDto
 {
-    @IsNotEmpty()
-    id:number;
+    id?:number;
 
     password?:string;
     oldPassword?:string

@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Cart } from 'src/cart/entities/cart.entity';
 import { UserProfile } from './entities/user-profile.entity';
+import { UserFavorites } from './entities/user-favorites.entity';
 
 
 @Injectable()
@@ -40,6 +41,8 @@ export class UserService {
         
         const cart = new Cart();
         const profile = new UserProfile();
+        const favorite = new UserFavorites()
+        profile.userFavorites = favorite
         profile.fullName = createUserDto.fullName
 
         user.password = passwordHashed
@@ -53,6 +56,7 @@ export class UserService {
     }
     
     async update(updateUserDto: UpdateUserDto) {
+        console.log('im out here')
         if(updateUserDto.password){
             if(!updateUserDto.oldPassword)
             { 
@@ -71,7 +75,7 @@ export class UserService {
             ...updateUserDto
         })
     }
-    
+
     async delete(userId: number){
         return await this.userRepository.delete({id: userId})
     }

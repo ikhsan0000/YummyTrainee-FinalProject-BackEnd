@@ -14,10 +14,12 @@ export class UserController {
         return await this.userService.getById(id)
     }
 
-    @Public()
     @Patch()
-    async updateUser(@Body() updateUserDto: UpdateUserDto){
-        return await this.userService.update(updateUserDto)
+    async updateUser(
+        @GetCurrentUser('sub') userId:number,
+        @Body() updateUserDto: UpdateUserDto
+    ){
+        return await this.userService.update({id:userId, ...updateUserDto})
     }
 
     @Delete()

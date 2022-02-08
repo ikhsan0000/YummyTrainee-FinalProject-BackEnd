@@ -15,15 +15,20 @@ export class UserProfileService {
 
     async getByUserId(userId: number){
         const userProfile = await this.userProfileRepository.findOne({
-            relations:['user', 'favorites'],
+            relations:['user', 'userFavorites'],
             where: {user: { id: userId }}
         });
+
+        if(!userProfile){
+            throw new NotFoundException('User not found')
+        }
     
         return userProfile
     }
 
     async updateUserProfile(userId: number, updateProfileDto: UpdateProfileDto){
         const currentProfile = await this.getByUserId(userId)
+
         return await this.userProfileRepository.save({
             id: currentProfile.id,
             ...updateProfileDto
@@ -38,11 +43,32 @@ export class UserProfileService {
         })
     }
 
-    async updateUserFavorite(userId: number, productId: number){
+    async addUserFavoriteProduct(userId: number, productId: number){
         const product = await this.productRepository.findOne(productId)
+        if(!product){
+            throw new NotFoundException('Product not found')
+        }
+        const currentProfile = await this.getByUserId(userId)
+    
+        currentProfile.userFavorites.product.push(product)
+
+        return await this.userProfileRepository.save(currentProfile)
+    }
+
+    async removeUserFavoriteProduct(userId: number, productId: number){
+        // const product = await this.productRepository.findOne(productId)
         const currentProfile = await this.getByUserId(userId)
 
-        return true
+        const favoriteProduct = currentProfile.userFavorites.product
+
+        // remove product(productId) from the array
+        const filteredFavoriteProduct = favoriteProduct.filter((product) => {
+            return product.id !== productId
+        })
+
+        currentProfile.userFavorites.product = filteredFavoriteProduct
+
+        return await this.userProfileRepository.save(currentProfile)
     }
 
 

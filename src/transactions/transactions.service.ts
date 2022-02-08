@@ -19,7 +19,10 @@ export class TransactionsService {
     ) { }
 
     async getCurrentTransactions(userId: number) {
-        return await this.transactionRepository.find()
+        return await this.transactionRepository.find({
+            relations: ['user', 'transactionItems'],
+            where: { user: { id: userId } }
+        })
     }
 
     async createTransaction(userId: number, data: CreateTransactionDto) {
@@ -39,6 +42,7 @@ export class TransactionsService {
             tmpTransactionItem.size = item.size
             tmpTransactionItem.quantity = item.quantity
             tmpTransactionItem.image = item.image
+            tmpTransactionItem.price = item.product.price
             transactionItem.push(tmpTransactionItem)
         })
 
