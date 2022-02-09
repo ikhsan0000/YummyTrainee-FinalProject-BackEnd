@@ -28,6 +28,9 @@ export class UserProfileService {
 
     async updateUserProfile(userId: number, updateProfileDto: UpdateProfileDto){
         const currentProfile = await this.getByUserId(userId)
+        if(!currentProfile){
+            throw new NotFoundException('No User Found')
+        }
 
         return await this.userProfileRepository.save({
             id: currentProfile.id,
@@ -37,6 +40,10 @@ export class UserProfileService {
 
     async updateProfilePicture(userId: number, image: any){
         const currentProfile = await this.getByUserId(userId)
+        if(!currentProfile){
+            throw new NotFoundException('No User Found')
+        }
+
         return await this.userProfileRepository.save({
             id: currentProfile.id,
             profilePicture: image.filename
@@ -56,8 +63,10 @@ export class UserProfileService {
     }
 
     async removeUserFavoriteProduct(userId: number, productId: number){
-        // const product = await this.productRepository.findOne(productId)
         const currentProfile = await this.getByUserId(userId)
+        if(!currentProfile){
+            throw new NotFoundException('No User Found')
+        }
 
         const favoriteProduct = currentProfile.userFavorites.product
 

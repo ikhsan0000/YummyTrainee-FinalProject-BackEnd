@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import { promisify } from 'util';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
@@ -8,6 +10,8 @@ import { Category } from './entities/category.entity';
 import { ProductImage } from './entities/product-image';
 import { Product } from './entities/product.entitiy';
 import { Size } from './entities/prouct-size.entity';
+
+const unlinkAsync = promisify(fs.unlink);
 
 @Injectable()
 export class ProductsService {
@@ -91,8 +95,19 @@ export class ProductsService {
             return this.productSizeRepository.findOne({ where: { name: size } })
         }))
 
+        if(product.sizes.length == 0){
+            throw new NotFoundException('No Size Found')
+        }
+
         product.brand = await this.brandRepository.findOne({ where: { name: data.brand } })
+        if(!product.brand){
+            throw new NotFoundException('No Brand Found')
+        }
+
         product.category = await this.categoryRepository.findOne({ where: { name: data.category } })
+        if(!product.category){
+            throw new NotFoundException('No Category Found')
+        }
 
         await this.productRepository.save(product)
 
@@ -147,7 +162,17 @@ export class ProductsService {
             throw new NotFoundException('No Product with that id')
         }
 
+        isProductExist.productImage.forEach((image) => {
+            this.deleteProductImage(image.fileName)
+        })
+
         return await this.productRepository.remove(isProductExist)
+    }
+
+    async deleteProductImage(fileName: string) {
+        
+        await unlinkAsync(`./images/products/${fileName}`)
+    
     }
 
 

@@ -26,6 +26,10 @@ export class CartService {
             where: { user: { id: userId } }
         })
 
+        if(!currentCart){
+            throw new NotFoundException('No Cart Found')
+        }
+
         // // this is to find all current cart of cartToProduct
         // const currentCartToProduct = await this.cartToProductRepository.find({
         //     relations:['cart', 'product'],
@@ -46,10 +50,18 @@ export class CartService {
             where: { user: { id: userId } }
         })
 
+        if(!currentCart) {
+            throw new NotFoundException('No Cart Found')
+        }
+
         const currentCartToProduct = await this.cartToProductRepository.find({
             relations:['cart', 'product'],
             where: { cart: { id: currentCart.id } }
         })
+
+        if(!currentCartToProduct){
+            throw new NotFoundException('No Cart Item Found')
+        }
 
         return currentCartToProduct
     }
@@ -57,7 +69,9 @@ export class CartService {
     async getCartToProductById(cartToProductId: number){
 
         const currentCartToProduct = await this.cartToProductRepository.findOne(cartToProductId)
-
+        if(!currentCartToProduct){
+            throw new NotFoundException('No Cart Item Found')
+        }
         return currentCartToProduct
     }
 
@@ -90,6 +104,7 @@ export class CartService {
             relations:['product'],
             where: {cart: {id: cart.id}}
         })
+       
         
         //check if the item is already in user's cart     
         let cartToProductItemAlreadyExist = null
@@ -100,6 +115,7 @@ export class CartService {
             }
         });
 
+        // if already exist, then add the quantity
         if(cartToProductItemAlreadyExist !== null){
             await this.cartToProductRepository.update(cartToProductItemAlreadyExist.id, {quantity: cartToProductItemAlreadyExist.quantity + data.quantity })
             return cartToProductItemAlreadyExist
@@ -134,6 +150,9 @@ export class CartService {
         const currentCartToProduct = await this.cartToProductRepository.findOne(data.cartToProductId, {
             relations:['cart', 'product'],
         })
+        if(!currentCartToProduct){
+            throw new NotFoundException('Cart Item Not Found')
+        }
         
         currentCartToProduct.quantity = data.quantity
 
@@ -147,7 +166,7 @@ export class CartService {
         })
 
         if(!currentCartToProduct){
-            throw new NotFoundException('No cart found')
+            throw new NotFoundException('No Cart Item Found')
         }
 
         const productId = currentCartToProduct.product.id
@@ -171,6 +190,9 @@ export class CartService {
             relations: ['products', 'user'],
             where: { user: { id: userId } }
         })
+        if(!currentCart){
+            throw new NotFoundException('No Cart Found')
+        }
         const currentUser = await this.userService.getById(userId)
 
         const emptyCart = new Cart()

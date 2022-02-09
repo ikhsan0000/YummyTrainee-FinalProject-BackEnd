@@ -30,6 +30,9 @@ export class UserService {
                 {[field]: searchedValue}
             ]
         })
+        if(!user){
+            throw new NotFoundException('User Not Found')
+        }
         return user
     }
 

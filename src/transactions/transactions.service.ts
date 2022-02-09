@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CartService } from 'src/cart/cart.service';
 import { UserService } from 'src/user/user.service';
@@ -30,6 +30,9 @@ export class TransactionsService {
         let transactionItem = []
         const currentUser = await this.userService.getById(userId)
         const currentCart = await this.cartService.getCartToProduct(userId)
+        if(!currentCart){
+            throw new NotFoundException('No Cart Found')
+        }
 
         transaction.address = data.address
         transaction.shippingFee = data.shippingFee
