@@ -32,6 +32,7 @@ export class UserProfileService {
             throw new NotFoundException('No User Found')
         }
 
+
         return await this.userProfileRepository.save({
             id: currentProfile.id,
             ...updateProfileDto

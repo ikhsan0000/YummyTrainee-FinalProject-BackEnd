@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Res, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { GetCurrentUser } from 'src/common/decorator';
+import { GetCurrentUser, Public } from 'src/common/decorator';
 import { editFileName, imageFileFilter } from 'src/common/imageUtils/imageUtils';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UserProfile } from './entities/user-profile.entity';
@@ -16,6 +16,13 @@ export class UserProfileController {
     async getById(@GetCurrentUser('sub') userId: number) {
         return await this.userProfileService.getByUserId(userId)
     }
+    
+    @Public()
+    @Get('images/:imageUrl')
+    getProductImage(@Param('imageUrl') image: string, @Res() res: any) {
+        return res.sendFile(image, { root: './images/profile' });
+    }
+
 
     @Patch('/profile-picture')
     @UseInterceptors(FileInterceptor('file', {
